@@ -115,15 +115,18 @@ class PostViewTest(TestCase):
         post = response.context['page_obj'][0]
         self._assert_post_has_attribs(post)
 
-    def test_post_create_show_correct_context(self):
+    def test_post_create_page_show_correct_context(self):
         """Шаблон post_create сформирован с правильным контекстом."""
-        response = self.authorized_client.get(reverse('posts:post_create'))
+        response = self.authorized_client.get(
+            reverse('posts:post_create'))
         form_fields = {
+            'text': forms.fields.CharField,
             'group': forms.fields.ChoiceField,
+            'image': forms.fields.ImageField,
         }
         for value, expected in form_fields.items():
             with self.subTest(value=value):
-                form_field = response.context['form'].fields[value]
+                form_field = response.context.get('form').fields.get(value)
                 self.assertIsInstance(form_field, expected)
 
     def test_post_edit_show_correct_context(self):

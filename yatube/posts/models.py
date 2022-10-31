@@ -10,7 +10,6 @@ class Group(models.Model):
     slug = models.SlugField(verbose_name='Идентификатор', unique=True)
     description = models.TextField(verbose_name='Описание')
 
-# для красоты увидел в слаке
     class Meta:
         verbose_name = 'Группа'
         verbose_name_plural = 'Группы'

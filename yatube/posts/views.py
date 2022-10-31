@@ -52,13 +52,11 @@ def post_detail(request, post_id):
     post_info = get_object_or_404(Post, pk=post_id)
     number_of_posts = post_info.author.posts.count()
     comments = Comment.objects.filter(post_id=post_id)
-    # form_comments = CommentForm(request.POST or None)
     form = CommentForm()
     context = {
         'post_info': post_info,
         'number_of_posts': number_of_posts,
         'comments': comments,
-        # 'form_comments': form_comments,
         'form': form,
     }
     return render(request, 'posts/post_detail.html', context)
@@ -66,25 +64,22 @@ def post_detail(request, post_id):
 
 @login_required
 def post_create(request):
-    if request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            instance.author_id = request.user.id
-            instance.save()
-            user_name = request.user.username
-            return redirect('posts:profile', user_name)
-        return render(request, 'posts/create_post.html', {'form': form})
-    form = PostForm()
+    # if request.method == 'POST':
+    form = PostForm(request.POST or None, files=request.FILES or None)
+    if form.is_valid():
+        post = form.save(commit=False)
+        post.author = request.user
+        form.save()
+        return redirect('posts:profile', post.author.username)
     return render(request, 'posts/create_post.html', {'form': form})
+    # form = PostForm()
+    # return render(request, 'posts/create_post.html', {'form': form})
 
 
 @login_required
 def post_edit(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    #  Если редактирует не автор
     if request.user != post.author:
-        # Перенаправляем на страницу просмотра поста
         return redirect('posts:post_detail', post.id)
 
     form = PostForm(
