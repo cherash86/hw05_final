@@ -72,8 +72,6 @@ def post_create(request):
         form.save()
         return redirect('posts:profile', post.author.username)
     return render(request, 'posts/create_post.html', {'form': form})
-    # form = PostForm()
-    # return render(request, 'posts/create_post.html', {'form': form})
 
 
 @login_required
